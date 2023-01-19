@@ -23,7 +23,7 @@ async function run() {
       data: {
         id: firstHabitId,
         title: 'Beber 2L água',
-        Created_at: firstHabitCreationDate,
+        created_at: firstHabitCreationDate,
         weekDays: {
           create: [
             { week_day: 1 },
