@@ -48,7 +48,7 @@ async function run() {
         }
       }
     }),
- 
+
     prisma.habit.create({
       data: {
         id: thirdHabitId,
