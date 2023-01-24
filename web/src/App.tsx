@@ -1,5 +1,4 @@
 import './styles/global.css'
-import './App.css'
 import { Header } from './components/Header'
 import { SummaryTable } from './components/SummaryTable'
 
