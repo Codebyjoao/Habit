@@ -56,7 +56,7 @@ export async function appRoutes(app: FastifyInstance){
     
       const day = await prisma.day.findFirst({
         where: {
-          date:"2023-01-02T03:00:00.000Z" , // parsedDate.toDate()
+          date: parsedDate.toDate(), //"2023-01-02T03:00:00.000Z" 
         },
         include: {
           dayHabits: true,
@@ -88,7 +88,6 @@ export async function appRoutes(app: FastifyInstance){
         date: today,
       }
     })
-
     if (!day){
       day = await prisma.day.create({
         data: {
@@ -120,5 +119,26 @@ export async function appRoutes(app: FastifyInstance){
         }
       })
     }
+  })
+
+  app.get('/summary', async ()=>{
+      const summary = await prisma.$queryRaw`
+      SELECT D.id, D.date,
+      (
+        SELECT cast(count(*) as float)
+        FROM day_habits DH
+        WHERE DH.day_id = D.id
+      ) as completed,
+      (
+        SELECT cast(count(*) as float)
+        FROM habit_week_days HWD
+        JOIN habits H 
+          ON H.id = HWD.habit_id
+        WHERE HWD.week_day= cast(strftime('%w',D.date/1000.0,'unixepoch') as int)
+          AND H.created_at <= D.date
+      ) as amount
+      FROM days D
+      `
+      return(summary)
   })
 }
