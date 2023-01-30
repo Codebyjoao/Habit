@@ -1,6 +1,7 @@
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { Check } from "phosphor-react";
 import { FormEvent, useState } from 'react';
+import { api } from '../lib/axios';
 
 const availableWeekDays = [
     'Domingo',
@@ -16,10 +17,23 @@ export function NewHabitForm(){
     const [title, setTitle] = useState('')
     const [weekDays, setWeekDays] = useState<number[]>([])
 
-    function createNewHabit(event: FormEvent){
+    async function createNewHabit(event: FormEvent){
         event.preventDefault()
-    }
 
+        if (!title || weekDays.length == 0){
+            return
+        }
+
+        await api.post('habits',{
+            title,
+            weekDays,
+        })
+
+        setTitle('')
+        setWeekDays([])
+    
+        alert('Habito criado com sucesso!')
+    }
     function handleToggleWeekDay( weekDay: number){
         if (weekDays.includes(weekDay)){
             const weekDaysWithRemoveOne = weekDays.filter(day => day != weekDay)
@@ -42,6 +56,7 @@ export function NewHabitForm(){
                 placeholder="Ex.: Exercicios, dormir bem, etc..."
                 className="p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder:text-zinc-400"
                 autoFocus
+                value={title}
                 onChange={event => setTitle(event.target.value)}
             />
 
@@ -55,6 +70,7 @@ export function NewHabitForm(){
                         <Checkbox.Root 
                             key={weekDay}
                             className='flex items-center gap-3 group'
+                            checked={weekDays.includes(index)}
                             onCheckedChange={() => handleToggleWeekDay(index)}
                         >
                             <div 
@@ -76,7 +92,7 @@ export function NewHabitForm(){
                 
             </div>
 
-            <button type="submit" className="mt-6 rounded-lg p-4 flex items-center gap-3 font-semibold bg-green-600 hover:bg-gray-500">
+            <button type="submit" className="mt-6 rounded-lg p-4 flex items-center justify-center gap-3 font-semibold bg-green-600 hover:bg-gray-500 transition-colors">
                 <Check size={20} weight="bold"/>
                 Confirmar
             </button>
